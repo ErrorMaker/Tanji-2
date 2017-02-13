@@ -20,7 +20,7 @@
     <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
     <AssemblyVersionSettings>None.IncrementOnDemandWithReset.Increment.None</AssemblyVersionSettings>
     <AssemblyFileVersionSettings>None.IncrementOnDemandWithReset.Increment.None</AssemblyFileVersionSettings>
-    <AssemblyVersion>1.4.1553.0</AssemblyVersion>
+    <AssemblyVersion>1.4.1554.0</AssemblyVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -217,15 +217,15 @@
     <Resource Include="Resources\Tanji_256.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Eavesdrop\Eavesdrop\Eavesdrop.csproj">
+    <ProjectReference Include="..\Submodules\Eavesdrop\Eavesdrop\Eavesdrop.csproj">
       <Project>{ced1943a-e9b4-46b6-a887-54bcb0dd406b}</Project>
       <Name>Eavesdrop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Flazzy\Flazzy\Flazzy.csproj">
-      <Project>{41C5BB50-939E-4F53-9C24-203B180943EE}</Project>
+    <ProjectReference Include="..\Submodules\Flazzy\Flazzy\Flazzy.csproj">
+      <Project>{41c5bb50-939e-4f53-9c24-203b180943ee}</Project>
       <Name>Flazzy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Sulakore\Sulakore\Sulakore.csproj">
+    <ProjectReference Include="..\Submodules\Sulakore\Sulakore\Sulakore.csproj">
       <Project>{15e841ec-2411-4f1b-a3ee-07e86cdb32c7}</Project>
       <Name>Sulakore</Name>
     </ProjectReference>

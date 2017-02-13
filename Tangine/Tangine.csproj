@@ -57,11 +57,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Flazzy\Flazzy\Flazzy.csproj">
-      <Project>{41C5BB50-939E-4F53-9C24-203B180943EE}</Project>
+    <ProjectReference Include="..\Submodules\Flazzy\Flazzy\Flazzy.csproj">
+      <Project>{41c5bb50-939e-4f53-9c24-203b180943ee}</Project>
       <Name>Flazzy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Sulakore\Sulakore\Sulakore.csproj">
+    <ProjectReference Include="..\Submodules\Sulakore\Sulakore\Sulakore.csproj">
       <Project>{15e841ec-2411-4f1b-a3ee-07e86cdb32c7}</Project>
       <Name>Sulakore</Name>
     </ProjectReference>
