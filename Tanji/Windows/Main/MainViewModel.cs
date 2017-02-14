@@ -17,7 +17,7 @@ namespace Tanji.Windows.Main
 {
     public class MainViewModel : ObservableObject, IMaster
     {
-        private readonly PacketLogger _logger;
+        private readonly LoggerView _loggerView;
         private readonly List<IHaltable> _haltables;
         private readonly SortedList<int, IReceiver> _receivers;
 
@@ -53,7 +53,12 @@ namespace Tanji.Windows.Main
             _haltables = new List<IHaltable>();
             _receivers = new SortedList<int, IReceiver>();
 
-            _logger = new PacketLogger(this);
+            _loggerView = new LoggerView(this);
+            if (!App.InDesignMode())
+            {
+                // TODO: Remove after debugging.
+                _loggerView.Show();
+            }
 
             App.Master = this;
             GameData = new HGameData();
@@ -74,7 +79,7 @@ namespace Tanji.Windows.Main
         }
         public void Restore()
         {
-            IsAlwaysOnTop = _logger.IsAlwaysOnTop;
+            IsAlwaysOnTop = _loggerView.IsAlwaysOnTop;
             Title = $"Tanji - Connected[{Connection.RemoteEndPoint}]";
 
             _haltables.ForEach(h => h.Restore());
