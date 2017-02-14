@@ -112,8 +112,8 @@ namespace Tanji.Services.Connection
 
         public ConnectionViewModel()
         {
-            Master.AddReceiver(this);
-            Master.AddHaltable(this);
+            Master?.AddReceiver(this);
+            Master?.AddHaltable(this);
 
             _saveCertificateDialog = new SaveFileDialog();
             _saveCertificateDialog.DefaultExt = "cer";
