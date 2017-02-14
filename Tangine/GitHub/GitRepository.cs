@@ -56,11 +56,13 @@ namespace Tangine.GitHub
                     webClient.Proxy = null;
                     webClient.Headers[HttpRequestHeader.UserAgent] = SKore.ChromeAgent;
 
-                    byte[] jsonData = await webClient
-                        .DownloadDataTaskAsync(address).ConfigureAwait(false);
+                    byte[] jsonData = await webClient.DownloadDataTaskAsync(address)
+                        .ConfigureAwait(false);
 
                     using (var jsonStream = new MemoryStream(jsonData))
+                    {
                         return (T)serializer.ReadObject(jsonStream);
+                    }
                 }
             }
             catch { return default(T); }

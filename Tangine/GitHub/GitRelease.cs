@@ -63,12 +63,15 @@ namespace Tangine.GitHub
         public Version GetVersion()
         {
             if (_version != null)
+            {
                 return _version;
+            }
 
             string version = TagName;
             if (version.StartsWith("v"))
+            {
                 version = version.Substring(1);
-
+            }
             return (_version = Version.Parse(version));
         }
 
