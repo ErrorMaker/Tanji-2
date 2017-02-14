@@ -1,6 +1,4 @@
-﻿using Tanji.Properties;
-
-namespace Tanji.Windows.Logger
+﻿namespace Tanji.Windows.Logger
 {
     partial class PacketLogger
     {
@@ -83,34 +81,36 @@ namespace Tanji.Windows.Logger
             // 
             // FindBtn
             // 
-            this.FindBtn.Enabled = false;
             this.FindBtn.Name = "FindBtn";
-            this.FindBtn.Size = new System.Drawing.Size(157, 22);
+            this.FindBtn.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.FindBtn.Size = new System.Drawing.Size(171, 22);
             this.FindBtn.Text = "Find";
+            this.FindBtn.Click += new System.EventHandler(this.FindBtn_Click);
             // 
             // FindMessageBtn
             // 
             this.FindMessageBtn.Enabled = false;
             this.FindMessageBtn.Name = "FindMessageBtn";
-            this.FindMessageBtn.Size = new System.Drawing.Size(157, 22);
+            this.FindMessageBtn.Size = new System.Drawing.Size(171, 22);
             this.FindMessageBtn.Text = "Find Message";
             // 
             // IgnoreMessageBtn
             // 
             this.IgnoreMessageBtn.Enabled = false;
             this.IgnoreMessageBtn.Name = "IgnoreMessageBtn";
-            this.IgnoreMessageBtn.Size = new System.Drawing.Size(157, 22);
+            this.IgnoreMessageBtn.Size = new System.Drawing.Size(171, 22);
             this.IgnoreMessageBtn.Text = "Ignore Message";
             // 
             // FileSep1
             // 
             this.FileSep1.Name = "FileSep1";
-            this.FileSep1.Size = new System.Drawing.Size(154, 6);
+            this.FileSep1.Size = new System.Drawing.Size(168, 6);
             // 
             // EmptyLogBtn
             // 
             this.EmptyLogBtn.Name = "EmptyLogBtn";
-            this.EmptyLogBtn.Size = new System.Drawing.Size(157, 22);
+            this.EmptyLogBtn.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.EmptyLogBtn.Size = new System.Drawing.Size(171, 22);
             this.EmptyLogBtn.Text = "Empty Log";
             this.EmptyLogBtn.Click += new System.EventHandler(this.EmptyLogBtn_Click);
             // 
@@ -134,7 +134,7 @@ namespace Tanji.Windows.Logger
             this.BlockedBtn,
             this.ReplacedBtn});
             this.DisplayFiltersBtn.Name = "DisplayFiltersBtn";
-            this.DisplayFiltersBtn.Size = new System.Drawing.Size(153, 22);
+            this.DisplayFiltersBtn.Size = new System.Drawing.Size(196, 22);
             this.DisplayFiltersBtn.Text = "Display Filters";
             // 
             // BlockedBtn
@@ -143,7 +143,7 @@ namespace Tanji.Windows.Logger
             this.BlockedBtn.CheckOnClick = true;
             this.BlockedBtn.CheckState = System.Windows.Forms.CheckState.Checked;
             this.BlockedBtn.Name = "BlockedBtn";
-            this.BlockedBtn.Size = new System.Drawing.Size(152, 22);
+            this.BlockedBtn.Size = new System.Drawing.Size(122, 22);
             this.BlockedBtn.Text = "Blocked";
             // 
             // ReplacedBtn
@@ -152,7 +152,7 @@ namespace Tanji.Windows.Logger
             this.ReplacedBtn.CheckOnClick = true;
             this.ReplacedBtn.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ReplacedBtn.Name = "ReplacedBtn";
-            this.ReplacedBtn.Size = new System.Drawing.Size(152, 22);
+            this.ReplacedBtn.Size = new System.Drawing.Size(122, 22);
             this.ReplacedBtn.Text = "Replaced";
             // 
             // DisplayDetailsBtn
@@ -164,7 +164,7 @@ namespace Tanji.Windows.Logger
             this.ParserClassNameBtn,
             this.MessageClassNameBtn});
             this.DisplayDetailsBtn.Name = "DisplayDetailsBtn";
-            this.DisplayDetailsBtn.Size = new System.Drawing.Size(153, 22);
+            this.DisplayDetailsBtn.Size = new System.Drawing.Size(196, 22);
             this.DisplayDetailsBtn.Text = "Display Details";
             // 
             // HashBtn
@@ -211,7 +211,7 @@ namespace Tanji.Windows.Logger
             // ViewSep1
             // 
             this.ViewSep1.Name = "ViewSep1";
-            this.ViewSep1.Size = new System.Drawing.Size(150, 6);
+            this.ViewSep1.Size = new System.Drawing.Size(193, 6);
             // 
             // ViewOutgoingBtn
             // 
@@ -219,7 +219,8 @@ namespace Tanji.Windows.Logger
             this.ViewOutgoingBtn.CheckOnClick = true;
             this.ViewOutgoingBtn.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ViewOutgoingBtn.Name = "ViewOutgoingBtn";
-            this.ViewOutgoingBtn.Size = new System.Drawing.Size(153, 22);
+            this.ViewOutgoingBtn.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.ViewOutgoingBtn.Size = new System.Drawing.Size(196, 22);
             this.ViewOutgoingBtn.Text = "View Outgoing";
             // 
             // ViewIncomingBtn
@@ -228,24 +229,26 @@ namespace Tanji.Windows.Logger
             this.ViewIncomingBtn.CheckOnClick = true;
             this.ViewIncomingBtn.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ViewIncomingBtn.Name = "ViewIncomingBtn";
-            this.ViewIncomingBtn.Size = new System.Drawing.Size(153, 22);
+            this.ViewIncomingBtn.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.ViewIncomingBtn.Size = new System.Drawing.Size(196, 22);
             this.ViewIncomingBtn.Text = "View Incoming";
             // 
             // ViewSep2
             // 
             this.ViewSep2.Name = "ViewSep2";
-            this.ViewSep2.Size = new System.Drawing.Size(150, 6);
+            this.ViewSep2.Size = new System.Drawing.Size(193, 6);
             // 
             // AlwaysOnTopBtn
             // 
             this.AlwaysOnTopBtn.CheckOnClick = true;
             this.AlwaysOnTopBtn.Name = "AlwaysOnTopBtn";
-            this.AlwaysOnTopBtn.Size = new System.Drawing.Size(153, 22);
+            this.AlwaysOnTopBtn.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+            this.AlwaysOnTopBtn.Size = new System.Drawing.Size(196, 22);
             this.AlwaysOnTopBtn.Text = "Always On Top";
             // 
             // LoggerTxt
             // 
-            this.LoggerTxt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.LoggerTxt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
             this.LoggerTxt.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.LoggerTxt.DetectUrls = false;
             this.LoggerTxt.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -268,7 +271,6 @@ namespace Tanji.Windows.Logger
             this.LoggerStrip.Name = "LoggerStrip";
             this.LoggerStrip.Size = new System.Drawing.Size(710, 22);
             this.LoggerStrip.TabIndex = 2;
-            this.LoggerStrip.Text = "statusStrip1";
             // 
             // RevisionLbl
             // 
@@ -287,8 +289,9 @@ namespace Tanji.Windows.Logger
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(710, 521);
             this.Controls.Add(this.LoggerTxt);
-            this.Controls.Add(this.LoggerStrip);
             this.Controls.Add(this.LoggerMenu);
+            this.Controls.Add(this.LoggerStrip);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = global::Tanji.Properties.Resources.Tanji_256;
             this.MainMenuStrip = this.LoggerMenu;
             this.Name = "PacketLogger";

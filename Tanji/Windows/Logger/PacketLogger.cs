@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.Windows.Interop;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 using Tanji.Services;
 using Tanji.Windows.Main;
+using Tanji.Windows.Logger.Dialogs;
 
 using Tangine.Habbo;
 
@@ -19,6 +22,7 @@ namespace Tanji.Windows.Logger
     {
         private readonly object _queueLock;
         private readonly MainViewModel _mainVM;
+        private readonly FindDialog _findDialog;
         private readonly Action<Queue<MessageEntry>> _displayEntries;
         private readonly Queue<DataInterceptedEventArgs> _intercepted;
         private readonly Dictionary<int, MessageItem> _ignoredMessages;
@@ -181,6 +185,9 @@ namespace Tanji.Windows.Logger
             _ignoredMessages = new Dictionary<int, MessageItem>();
 
             InitializeComponent();
+            
+            _findDialog = new FindDialog(LoggerTxt);
+            SetOwner(_findDialog);
 
             Bind(BlockedBtn, "Checked", nameof(IsDisplayingBlocked));
             Bind(ReplacedBtn, "Checked", nameof(IsDisplayingReplaced));
@@ -197,10 +204,15 @@ namespace Tanji.Windows.Logger
             Bind(AlwaysOnTopBtn, "Checked", nameof(IsAlwaysOnTop));
         }
 
+        private void FindBtn_Click(object sender, EventArgs e)
+        {
+            _findDialog.Show();
+        }
         private void EmptyLogBtn_Click(object sender, EventArgs e)
         {
             LoggerTxt.Clear();
         }
+
         private void LogWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var entries = new Queue<MessageEntry>();
@@ -308,6 +320,11 @@ namespace Tanji.Windows.Logger
         public void HandleOutgoing(DataInterceptedEventArgs e) => PushToQueue(e);
         public void HandleIncoming(DataInterceptedEventArgs e) => PushToQueue(e);
 
+        private void SetOwner(Window window)
+        {
+            var helper = new WindowInteropHelper(window);
+            helper.Owner = Handle;
+        }
         private void PushToQueue(DataInterceptedEventArgs e)
         {
             e.Continue(true);
