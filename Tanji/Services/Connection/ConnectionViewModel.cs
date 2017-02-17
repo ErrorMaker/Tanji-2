@@ -16,7 +16,6 @@ using Eavesdrop;
 
 using Flazzy;
 
-using Sulakore.Habbo.Web;
 using Sulakore.Communication;
 using Sulakore.Protocol.Encryption;
 
@@ -112,9 +111,6 @@ namespace Tanji.Services.Connection
 
         public ConnectionViewModel()
         {
-            Master?.AddReceiver(this);
-            Master?.AddHaltable(this);
-
             _saveCertificateDialog = new SaveFileDialog();
             _saveCertificateDialog.DefaultExt = "cer";
             _saveCertificateDialog.FileName = "Eavesdrop Authority";
@@ -153,11 +149,11 @@ namespace Tanji.Services.Connection
                 else
                 {
                     Status = DISASSEMBLING_CLIENT;
-                    Master.Game = new HGame(clientPath);
-                    Master.Game.Disassemble();
+                    App.Master.Game = new HGame(clientPath);
+                    App.Master.Game.Disassemble();
 
                     Status = GENERATING_MESSAGE_HASHES;
-                    Master.Game.GenerateMessageHashes();
+                    App.Master.Game.GenerateMessageHashes();
 
                     TerminateProxy();
                     InterceptConnection();
@@ -178,16 +174,16 @@ namespace Tanji.Services.Connection
             Directory.CreateDirectory(clientDirectory);
 
             Status = DISASSEMBLING_CLIENT;
-            Master.Game = new HGame(e.Payload);
-            Master.Game.Disassemble();
+            App.Master.Game = new HGame(e.Payload);
+            App.Master.Game.Disassemble();
 
             Status = GENERATING_MESSAGE_HASHES;
-            Master.Game.GenerateMessageHashes();
+            App.Master.Game.GenerateMessageHashes();
 
             Status = MODIFYING_CLIENT;
-            Master.Game.Sanitize(Sanitization.All);
-            Master.Game.DisableHostChecks();
-            Master.Game.InjectKeyShouter();
+            App.Master.Game.Sanitize(Sanitization.All);
+            App.Master.Game.DisableHostChecks();
+            App.Master.Game.InjectKeyShouter();
 
             CompressionKind compression = CompressionKind.ZLIB;
 #if DEBUG
@@ -195,7 +191,7 @@ namespace Tanji.Services.Connection
 #endif
 
             Status = ASSEMBLING_CLIENT;
-            e.Payload = Master.Game.ToArray(compression);
+            e.Payload = App.Master.Game.ToArray(compression);
             File.WriteAllBytes(clientPath, e.Payload);
 
             TerminateProxy();
@@ -208,23 +204,26 @@ namespace Tanji.Services.Connection
             if (!body.Contains("info.host") && !body.Contains("info.port")) return;
 
             Eavesdropper.ResponseIntercepted -= InterceptClientPage;
-            Master.GameData.Update(body);
+            App.Master.GameData.Update(body);
 
-            HotelEndPoint endpoint = null;
             if (IsAutomaticServerExtraction)
             {
-                if (TryExtractHotelServer(Master.GameData, out endpoint))
+                ushort port = 0;
+                HotelEndPoint endpoint = null;
+                string[] ports = App.Master.GameData.InfoPort.Split(',');
+
+                if (ports.Length == 0 ||
+                    !ushort.TryParse(ports[0], out port) ||
+                    !HotelEndPoint.TryParse(App.Master.GameData.InfoHost, port, out endpoint))
                 {
-                    HotelServer = endpoint;
-                }
-                else
-                {
-                    Cancel(sender);
+                    Cancel(null);
                     return;
                 }
+
+                HotelServer = endpoint;
             }
 
-            body = body.Replace(Master.GameData.InfoHost, "127.0.0.1");
+            body = body.Replace(App.Master.GameData.InfoHost, "127.0.0.1");
             body = body.Replace(".swf", $".swf?{DateTime.Now.Ticks}-Tanji");
             e.Payload = Encoding.UTF8.GetBytes(body);
 
@@ -232,32 +231,19 @@ namespace Tanji.Services.Connection
             Eavesdropper.RequestIntercepted += InjectGameClient;
         }
 
-        public void TerminateProxy()
+        private void TerminateProxy()
         {
             Eavesdropper.Terminate();
             Eavesdropper.RequestIntercepted -= InjectGameClient;
             Eavesdropper.ResponseIntercepted -= InterceptClientPage;
             Eavesdropper.ResponseIntercepted -= InterceptGameClient;
         }
-        public bool TryExtractHotelServer(HGameData gameData, out HotelEndPoint endpoint)
-        {
-            endpoint = null;
-            ushort port = 0;
-            string[] ports = Master.GameData.InfoPort.Split(',');
-
-            if (ports.Length > 0 && ushort.TryParse(ports[0], out port))
-            {
-                HotelEndPoint.TryParse(Master.GameData.InfoHost, port, out endpoint);
-            }
-            return (endpoint != null);
-        }
-
         private void InterceptConnection()
         {
             Status = INTERCEPTING_CONNECTION;
 
             Task connectTask =
-                Master.Connection.InterceptAsync(HotelServer);
+                App.Master.Connection.InterceptAsync(HotelServer);
         }
 
         private void Browse(object obj)
@@ -271,7 +257,7 @@ namespace Tanji.Services.Connection
         private void Cancel(object obj)
         {
             TerminateProxy();
-            Master.Connection.Disconnect();
+            App.Master.Connection.Disconnect();
 
             if (IsAutomaticServerExtraction)
             {
@@ -281,13 +267,13 @@ namespace Tanji.Services.Connection
         }
         private void Connect(object obj)
         {
-            if (Master.Connection.IsConnected)
+            if (App.Master.Connection.IsConnected)
             {
                 if (MessageBox.Show("Are you sure you want to disconnect from the current session?", "Tanji ~ Alert!",
                          MessageBoxButton.YesNo,
                          MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
                 {
-                    Cancel(null);
+                    App.Master.Connection.Disconnect();
                 }
             }
 
@@ -352,8 +338,8 @@ namespace Tanji.Services.Connection
                     .Select(x => Convert.ToByte(sharedKeyHex.Substring(x * 2, 2), 16))
                     .ToArray();
 
-                Master.Connection.Remote.Encrypter = new RC4(sharedKey);
-                Master.Connection.Remote.IsEncrypting = true;
+                App.Master.Connection.Remote.Encrypter = new RC4(sharedKey);
+                App.Master.Connection.Remote.IsEncrypting = true;
 
                 IsReceiving = false;
                 e.IsBlocked = true;
