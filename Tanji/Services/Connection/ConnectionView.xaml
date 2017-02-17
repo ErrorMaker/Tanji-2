@@ -37,7 +37,8 @@
                         Title="Custom Client"
                         TextAlignment="Center"
                         IsReadOnlyCaretVisible="True"
-                        Text="{Binding CustomClientPath}"/>
+                        Text="{Binding CustomClientPath}"
+                        IsReadOnly="{Binding IsConnecting}"/>
         <Button Content="Browse"
                 Margin="388,271,0,27"
                 Command="{Binding BrowseCommand}"
