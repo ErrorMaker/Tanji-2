@@ -2,7 +2,7 @@
 
 namespace Tanji.Services.Injection
 {
-    public class InjectionViewModel : ObservableObject, IInjector
+    public class InjectionViewModel : ObservableObject
     {
         public InjectionViewModel()
         { }
