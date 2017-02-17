@@ -325,6 +325,7 @@ namespace Tanji.Windows.Logger
                             break;
 
                             case "double":
+                            structure += ("{d:" + packet.ReadDouble(ref position) + "}");
                             break;
 
                             case "byte":
