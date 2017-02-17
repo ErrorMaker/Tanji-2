@@ -683,16 +683,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style TargetType="TextBlock" x:Key="MessageBlock">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Kind}" Value="Outgoing">
-                    <Setter Property="Foreground" Value="#0066CC"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Kind}" Value="Incoming">
-                    <Setter Property="Foreground" Value="#B22222"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
 
     </Application.Resources>
 </Application>
