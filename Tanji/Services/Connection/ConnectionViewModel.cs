@@ -275,6 +275,7 @@ namespace Tanji.Services.Connection
                 {
                     App.Master.Connection.Disconnect();
                 }
+                else return;
             }
 
             if (!IsAutomaticServerExtraction && HotelServer == null)
