@@ -20,7 +20,7 @@
     <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
     <AssemblyVersionSettings>None.IncrementOnDemandWithReset.Increment.None</AssemblyVersionSettings>
     <AssemblyFileVersionSettings>None.IncrementOnDemandWithReset.Increment.None</AssemblyFileVersionSettings>
-    <AssemblyVersion>1.4.1584.0</AssemblyVersion>
+    <AssemblyVersion>1.4.1625.0</AssemblyVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -76,6 +76,12 @@
     <Compile Include="Controls\BindableToolStripMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\HPacketLogger.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HPacketLogger.Designer.cs">
+      <DependentUpon>HPacketLogger.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LabelBox.cs" />
     <Compile Include="Helpers\AsyncCommand.cs" />
     <Compile Include="Helpers\Converters\BooleanOrConverter.cs" />
@@ -96,7 +102,6 @@
     </Compile>
     <Compile Include="Services\Extensions\ExtensionsViewModel.cs" />
     <Compile Include="Services\IHaltable.cs" />
-    <Compile Include="Services\IInjector.cs" />
     <Compile Include="Services\Injection\Constructer\ConstructerView.xaml.cs">
       <DependentUpon>ConstructerView.xaml</DependentUpon>
     </Compile>
@@ -127,19 +132,10 @@
     </Compile>
     <Compile Include="Services\Toolbox\ToolboxViewModel.cs" />
     <Compile Include="Services\IMaster.cs" />
-    <Compile Include="Windows\Logger\Dialogs\FindDialog.xaml.cs">
-      <DependentUpon>FindDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\Logger\LoggerView.xaml.cs">
       <DependentUpon>LoggerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Logger\MessageEntry.cs" />
-    <Compile Include="Windows\Logger\PacketLogger.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Windows\Logger\PacketLogger.Designer.cs">
-      <DependentUpon>PacketLogger.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Windows\Logger\LoggerViewModel.cs" />
     <Compile Include="Windows\Main\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
@@ -184,10 +180,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Logger\Dialogs\FindDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\Logger\LoggerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -211,13 +203,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Controls\HPacketLogger.resx">
+      <DependentUpon>HPacketLogger.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Windows\Logger\PacketLogger.resx">
-      <DependentUpon>PacketLogger.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
