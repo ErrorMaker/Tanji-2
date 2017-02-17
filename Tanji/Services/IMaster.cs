@@ -6,7 +6,7 @@ using Sulakore.Communication;
 
 namespace Tanji.Services
 {
-    public interface IMaster : IContractor, ITContext, IHaltable
+    public interface IMaster : IContractor, ITContext
     {
         new HGame Game { get; set; }
         new HConnection Connection { get; }
