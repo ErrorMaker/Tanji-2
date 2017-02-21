@@ -4,22 +4,34 @@ using System.Threading.Tasks;
 
 namespace Tanji.Helpers
 {
-    public class AsyncCommand : Command
+    public class AsyncCommand : ICommand
     {
-        private readonly Func<object, Task> _executeAsync;
+        private readonly Predicate<object> _canExecuteDelegate;
+        private readonly Func<object, Task> _executeAsyncDelegate;
 
-        public AsyncCommand(Predicate<object> canExecute, Func<object, Task> executeAsync)
-            : this(canExecute, executeAsync, false)
-        { }
-        public AsyncCommand(Predicate<object> canExecute, Func<object, Task> executeAsync, bool isInverse)
-            : base(canExecute, isInverse)
+        public event EventHandler CanExecuteChanged
         {
-            _executeAsync = executeAsync;
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public override async void Execute(object parameter)
+        public AsyncCommand(Func<object, Task> executeAsync)
         {
-            await _executeAsync(parameter);
+            _executeAsyncDelegate = executeAsync;
+        }
+        public AsyncCommand(Func<object, Task> executeAsync, Predicate<object> canExecute)
+            : this(executeAsync)
+        {
+            _canExecuteDelegate = canExecute;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return (_canExecuteDelegate?.Invoke(parameter) ?? true);
+        }
+        public async void Execute(object parameter)
+        {
+            await _executeAsyncDelegate(parameter);
             CommandManager.InvalidateRequerySuggested();
         }
     }
