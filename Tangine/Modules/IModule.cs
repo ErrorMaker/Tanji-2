@@ -1,15 +1,13 @@
-﻿using Tangine.Habbo;
+﻿using System;
 
-using Sulakore.Modules;
-using Sulakore.Habbo.Web;
-using Sulakore.Communication;
+using Tangine.Habbo;
+using Tangine.Network;
 
 namespace Tangine.Modules
 {
-    public interface ITExtension : IModule
+    public interface IModule : IDisposable
     {
-        ITContext Context { get; }
-        HTriggers Triggers { get; }
+        IInstaller Installer { get; }
 
         void ModifyGame(HGame game);
         void ModifyGameData(HGameData gameData);
