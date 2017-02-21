@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-using Sulakore.Communication;
+using Tangine.Network;
 
 namespace Tanji.Helpers.Converters
 {
@@ -17,7 +17,9 @@ namespace Tanji.Helpers.Converters
             string[] points = address.Split(':');
 
             if (points.Length < 2)
+            {
                 return null;
+            }
 
             ushort port = 0;
             HotelEndPoint endpoint = null;
