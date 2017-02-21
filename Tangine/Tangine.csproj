@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -42,18 +43,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\GitHubAttribute.cs" />
-    <Compile Include="Modules\ExtensionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GitHub\GitAsset.cs" />
-    <Compile Include="GitHub\GitProfile.cs" />
-    <Compile Include="GitHub\GitRelease.cs" />
-    <Compile Include="GitHub\GitRepository.cs" />
+    <Compile Include="Modules\Attributes\AuthorAttribute.cs" />
+    <Compile Include="Modules\Attributes\ModuleAttribute.cs" />
+    <Compile Include="Habbo\Enums\HAction.cs" />
+    <Compile Include="Habbo\Enums\HBan.cs" />
+    <Compile Include="Habbo\Enums\HDance.cs" />
+    <Compile Include="Habbo\Enums\HDirection.cs" />
+    <Compile Include="Habbo\HGameData.cs" />
+    <Compile Include="Habbo\Enums\HGender.cs" />
+    <Compile Include="Habbo\Enums\HGesture.cs" />
+    <Compile Include="Habbo\Enums\HHotel.cs" />
+    <Compile Include="Habbo\Enums\HModel.cs" />
+    <Compile Include="Habbo\Enums\HSign.cs" />
+    <Compile Include="Habbo\Enums\HSpeech.cs" />
+    <Compile Include="Habbo\Enums\HStance.cs" />
+    <Compile Include="Habbo\Enums\HTheme.cs" />
     <Compile Include="Habbo\HGame.cs" />
-    <Compile Include="Internals\ContractorProxy.cs" />
-    <Compile Include="Modules\ITContext.cs" />
-    <Compile Include="Modules\ITExtension.cs" />
+    <Compile Include="Modules\IInstaller.cs" />
+    <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Network\DataInterceptedEventArgs.cs" />
+    <Compile Include="Network\HotelEndPoint.cs" />
+    <Compile Include="Network\IHConnection.cs" />
+    <Compile Include="Protocol\HAncient.cs" />
+    <Compile Include="Protocol\HResolverFactory.cs" />
+    <Compile Include="Protocol\Encryption\Enums\PKCSPadding.cs" />
+    <Compile Include="Protocol\Encryption\HKeyExchange.cs" />
+    <Compile Include="Protocol\Encryption\RC4.cs" />
+    <Compile Include="Protocol\Encryption\RSAKeys.cs" />
+    <Compile Include="Protocol\HPacket.cs" />
+    <Compile Include="Protocol\HModern.cs" />
+    <Compile Include="Protocol\HResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,11 +80,8 @@
       <Project>{41c5bb50-939e-4f53-9c24-203b180943ee}</Project>
       <Name>Flazzy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Submodules\Sulakore\Sulakore\Sulakore.csproj">
-      <Project>{15e841ec-2411-4f1b-a3ee-07e86cdb32c7}</Project>
-      <Name>Sulakore</Name>
-    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
