@@ -1,12 +1,11 @@
-﻿using Tangine.Habbo;
-using Tangine.Modules;
+﻿using Tanji.Network;
 
-using Sulakore.Modules;
-using Sulakore.Communication;
+using Tangine.Habbo;
+using Tangine.Modules;
 
 namespace Tanji.Services
 {
-    public interface IMaster : IContractor, ITContext
+    public interface IMaster : IInstaller
     {
         new HGame Game { get; set; }
         new HConnection Connection { get; }

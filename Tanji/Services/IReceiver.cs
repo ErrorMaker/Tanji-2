@@ -1,4 +1,4 @@
-﻿using Sulakore.Communication;
+﻿using Tangine.Network;
 
 namespace Tanji.Services
 {
