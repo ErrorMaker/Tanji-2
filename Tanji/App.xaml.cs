@@ -2,16 +2,14 @@
 using System.Windows;
 using System.Collections.Generic;
 
+using Tanji.Network;
 using Tanji.Services;
 using Tanji.Windows.Logger;
 using Tanji.Services.Connection;
 
 using Tangine.Habbo;
 using Tangine.Modules;
-
-using Sulakore.Communication;
-using Sulakore.Habbo.Web;
-using Sulakore.Modules;
+using Tangine.Network;
 
 namespace Tanji
 {
@@ -20,13 +18,13 @@ namespace Tanji
         private readonly List<IHaltable> _haltables;
         private readonly SortedList<int, IReceiver> _receivers;
 
+        HGame IInstaller.Game => Game;
         public HGame Game { get; set; }
-        HGame ITContext.Game => Game;
 
         public HGameData GameData { get; set; }
 
         public HConnection Connection { get; }
-        IHConnection IContractor.Connection => Connection;
+        IHConnection IInstaller.Connection => Connection;
 
         public static IMaster Master { get; private set; }
 
