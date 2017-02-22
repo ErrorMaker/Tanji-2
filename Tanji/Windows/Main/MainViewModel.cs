@@ -32,7 +32,10 @@ namespace Tanji.Windows.Main
 
         public MainViewModel()
         {
-            _loggerView = new LoggerView();
+            if (App.Master != null)
+            {
+                _loggerView = new LoggerView();
+            }
         }
 
         public void Halt()
