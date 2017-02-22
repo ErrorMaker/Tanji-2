@@ -10,9 +10,8 @@ using Tanji.Services;
 using Tanji.Controls;
 
 using Tangine.Habbo;
-
-using Sulakore.Protocol;
-using Sulakore.Communication;
+using Tangine.Network;
+using Tangine.Protocol;
 
 namespace Tanji.Windows.Logger
 {
@@ -176,7 +175,7 @@ namespace Tanji.Windows.Logger
             set
             {
                 _isAlwaysOnTop = value;
-                if (Application.Current != null)
+                if (Application.Current?.MainWindow != null)
                 {
                     Application.Current.MainWindow.Topmost = value;
                 }
@@ -201,13 +200,12 @@ namespace Tanji.Windows.Logger
             _intercepted = new Queue<DataInterceptedEventArgs>();
             _ignoredMessages = new Dictionary<int, MessageItem>();
 
-            FindCommand = new Command(AlwaysTrue, Find);
-            IgnoreCommand = new Command(AlwaysTrue, Ignore);
-            EmptyLogCommand = new Command(AlwaysTrue, EmptyLog);
-
-            ToggleAlwaysOnTopCommand = new Command(AlwaysTrue, ToggleAlwaysOnTop);
-            ToggleViewOutgoingCommand = new Command(AlwaysTrue, ToggleViewOutgoing);
-            ToggleViewIncomingCommand = new Command(AlwaysTrue, ToggleViewIncoming);
+            FindCommand = new Command(Find);
+            IgnoreCommand = new Command(Ignore);
+            EmptyLogCommand = new Command(EmptyLog);
+            ToggleAlwaysOnTopCommand = new Command(ToggleAlwaysOnTop);
+            ToggleViewOutgoingCommand = new Command(ToggleViewOutgoing);
+            ToggleViewIncomingCommand = new Command(ToggleViewIncoming);
         }
 
         private void Find(object obj)
@@ -289,7 +287,7 @@ namespace Tanji.Windows.Logger
                 }
 
                 entry.Add(Tuple.Create(title, entryHighlight));
-                entry.Add(Tuple.Create($"({args.Message.Header}, {args.Message.Length}", entryHighlight));
+                entry.Add(Tuple.Create($"({args.Packet.Header}, {args.Packet.Length}", entryHighlight));
                 if (message != null)
                 {
                     if (IsDisplayingMessageName)
@@ -305,23 +303,23 @@ namespace Tanji.Windows.Logger
                 }
                 entry.Add(Tuple.Create(")", entryHighlight));
                 entry.Add(Tuple.Create($" {arrow} ", DetailHighlight));
-                entry.Add(Tuple.Create($"{args.Message}\r\n", entryHighlight));
+                entry.Add(Tuple.Create($"{args.Packet}\r\n", entryHighlight));
 
                 if (IsDisplayingStructure && message?.Structure?.Length > 0)
                 {
                     int position = 0;
-                    HMessage packet = args.Message;
+                    HPacket packet = args.Packet;
                     string structure = ("{l}{u:" + packet.Header + "}");
                     foreach (string valueType in message.Structure)
                     {
                         switch (valueType.ToLower())
                         {
                             case "int":
-                            structure += ("{i:" + packet.ReadInteger(ref position) + "}");
+                            structure += ("{i:" + packet.ReadInt32(ref position) + "}");
                             break;
 
                             case "string":
-                            structure += ("{s:" + packet.ReadString(ref position) + "}");
+                            structure += ("{s:" + packet.ReadUTF8(ref position) + "}");
                             break;
 
                             case "double":
@@ -390,7 +388,7 @@ namespace Tanji.Windows.Logger
                 App.Master.Game.OutMessages : App.Master.Game.InMessages);
 
             MessageItem message = null;
-            messages.TryGetValue(args.Message.Header, out message);
+            messages.TryGetValue(args.Packet.Header, out message);
 
             return message;
         }
@@ -405,7 +403,7 @@ namespace Tanji.Windows.Logger
 
             if (_ignoredMessages.Count > 0)
             {
-                int header = args.Message.Header;
+                int header = args.Packet.Header;
                 if (!args.IsOutgoing)
                 {
                     header = (ushort.MaxValue - header);
