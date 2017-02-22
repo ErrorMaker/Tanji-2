@@ -4,20 +4,18 @@ using System.Net;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Threading.Tasks;
 
 using Microsoft.Win32;
 
 using Tanji.Helpers;
 
 using Tangine.Habbo;
+using Tangine.Network;
+using Tangine.Protocol.Encryption;
 
 using Eavesdrop;
 
 using Flazzy;
-
-using Sulakore.Communication;
-using Sulakore.Protocol.Encryption;
 
 namespace Tanji.Services.Connection
 {
@@ -121,12 +119,11 @@ namespace Tanji.Services.Connection
             _openClientDialog.Title = "Tanji - Select Custom Client";
             _openClientDialog.Filter = "Shockwave Flash File (*.swf)|*.swf";
 
-            BrowseCommand = new Command(AlwaysTrue, Browse);
-            CancelCommand = new Command(AlwaysTrue, Cancel);
-            ConnectCommand = new Command(AlwaysTrue, Connect);
-
-            ExportRootCertificateCommand = new Command(AlwaysTrue, ExportRootCertificate);
-            DestroySignedCertificatesCommand = new Command(AlwaysTrue, DestroySignedCertificates);
+            BrowseCommand = new Command(Browse);
+            CancelCommand = new Command(Cancel);
+            ConnectCommand = new Command(Connect);
+            ExportRootCertificateCommand = new Command(ExportRootCertificate);
+            DestroySignedCertificatesCommand = new Command(DestroySignedCertificates);
         }
 
         private void InjectGameClient(object sender, RequestInterceptedEventArgs e)
@@ -204,7 +201,7 @@ namespace Tanji.Services.Connection
             if (!body.Contains("info.host") && !body.Contains("info.port")) return;
 
             Eavesdropper.ResponseIntercepted -= InterceptClientPage;
-            App.Master.GameData.Update(body);
+            App.Master.GameData.Source = body;
 
             if (IsAutomaticServerExtraction)
             {
@@ -241,9 +238,7 @@ namespace Tanji.Services.Connection
         private void InterceptConnection()
         {
             Status = INTERCEPTING_CONNECTION;
-
-            Task connectTask =
-                App.Master.Connection.InterceptAsync(HotelServer);
+            // TODO: Intercept connection.
         }
 
         private void Browse(object obj)
@@ -327,9 +322,9 @@ namespace Tanji.Services.Connection
         public bool IsReceiving { get; private set; }
         public void HandleOutgoing(DataInterceptedEventArgs e)
         {
-            if (e.Message.Header == 4001)
+            if (e.Packet.Header == 4001)
             {
-                string sharedKeyHex = e.Message.ReadString();
+                string sharedKeyHex = e.Packet.ReadUTF8();
                 if (sharedKeyHex.Length % 2 != 0)
                 {
                     sharedKeyHex = ("0" + sharedKeyHex);
@@ -342,8 +337,8 @@ namespace Tanji.Services.Connection
                 App.Master.Connection.Remote.Encrypter = new RC4(sharedKey);
                 App.Master.Connection.Remote.IsEncrypting = true;
 
-                IsReceiving = false;
                 e.IsBlocked = true;
+                IsReceiving = false;
             }
             else if (e.Step > 10)
             {
