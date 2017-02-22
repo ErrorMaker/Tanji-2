@@ -10,7 +10,6 @@
              xmlns:toolbox="clr-namespace:Tanji.Services.Toolbox"
              xmlns:exten="clr-namespace:Tanji.Services.Extensions"
              xmlns:opts="clr-namespace:Tanji.Services.Options"
-             xmlns:proto="clr-namespace:Sulakore.Protocol;assembly=Sulakore"
              ShutdownMode="OnMainWindowClose"
              StartupUri="Windows/Main/MainView.xaml">
     <Application.Resources>
