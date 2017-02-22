@@ -20,7 +20,7 @@
     <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
     <AssemblyVersionSettings>None.IncrementOnDemandWithReset.Increment.None</AssemblyVersionSettings>
     <AssemblyFileVersionSettings>None.IncrementOnDemandWithReset.Increment.None</AssemblyFileVersionSettings>
-    <AssemblyVersion>1.4.1625.0</AssemblyVersion>
+    <AssemblyVersion>1.4.1660.0</AssemblyVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -87,12 +87,12 @@
     <Compile Include="Helpers\Converters\BooleanOrConverter.cs" />
     <Compile Include="Helpers\Converters\HotelEndPointConverter.cs" />
     <Compile Include="Helpers\Converters\InverseBooleanConverter.cs" />
-    <Compile Include="Helpers\Converters\PercentageConverter.cs" />
-    <Compile Include="Helpers\Converters\TrimmedMessageConverter.cs" />
     <Compile Include="Helpers\MultiConverter.cs" />
     <Compile Include="Helpers\Command.cs" />
     <Compile Include="Helpers\SingleConverter.cs" />
     <Compile Include="Helpers\ObservableObject.cs" />
+    <Compile Include="Network\HConnection.cs" />
+    <Compile Include="Network\HNode.cs" />
     <Compile Include="Services\Connection\ConnectionView.xaml.cs">
       <DependentUpon>ConnectionView.xaml</DependentUpon>
     </Compile>
@@ -233,15 +233,12 @@
       <Project>{41c5bb50-939e-4f53-9c24-203b180943ee}</Project>
       <Name>Flazzy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Submodules\Sulakore\Sulakore\Sulakore.csproj">
-      <Project>{15e841ec-2411-4f1b-a3ee-07e86cdb32c7}</Project>
-      <Name>Sulakore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tangine\Tangine.csproj">
       <Project>{F3199201-061D-4DF2-A00E-61BA3B754E3E}</Project>
       <Name>Tangine</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
