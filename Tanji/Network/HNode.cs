@@ -17,7 +17,7 @@ namespace Tanji.Network
         }
 
         public Socket Client { get; }
-        public HResolver DataResolver { get; set; }
+        public HResolver Resolver { get; set; }
         public HotelEndPoint EndPoint { get; private set; }
 
         public RC4 Encrypter { get; set; }
@@ -121,31 +121,30 @@ namespace Tanji.Network
 
         protected async Task<HPacket> ReceivePacketAsync(SocketFlags socketFlags)
         {
-            if (DataResolver == null)
+            if (Resolver == null)
             {
                 throw new NullReferenceException("Data resolver cannot be null.");
             }
 
-            byte[] lengthData = await ReceiveBufferAsync(4, socketFlags)
-                .ConfigureAwait(false);
+            byte[] lengthData = await ReceiveBufferAsync(
+                Resolver.LengthBlockSize, socketFlags).ConfigureAwait(false);
 
-            if (lengthData.Length == 0)
+            if (lengthData.Length == 0 && Resolver.LengthBlockSize != 0)
             {
                 await DisconnectAsync().ConfigureAwait(false);
                 return null;
             }
 
-            int msgLength = DataResolver.GetBodyLength(lengthData); //BigEndian.ToInt32(lengthData, 0);
-            var msgBody = new byte[msgLength];
-
-            int read = await ReceiveAsync(msgBody)
-                .ConfigureAwait(false);
+            int bodyLength = Resolver.GetBodyLength(lengthData);
+            var body = new byte[bodyLength];
 
             int noneReadCount = 0;
-            while (read != msgLength)
+            int read = await ReceiveAsync(body).ConfigureAwait(false);
+            while (read != bodyLength)
             {
-                int curRead = await ReceiveAsync(msgBody, read,
-                    (msgLength - read), socketFlags).ConfigureAwait(false);
+                int curRead = await ReceiveAsync(
+                    body, read, (bodyLength - read), socketFlags)
+                    .ConfigureAwait(false);
 
                 if (!IsConnected ||
                     (curRead == 0 && ++noneReadCount >= 2))
@@ -160,12 +159,11 @@ namespace Tanji.Network
                 }
             }
 
-            var msgData = new byte[4 + msgLength];
-            Buffer.BlockCopy(lengthData, 0, msgData, 0, lengthData.Length);
-            Buffer.BlockCopy(msgBody, 0, msgData, lengthData.Length, msgBody.Length);
+            var packet = new byte[4 + bodyLength];
+            Buffer.BlockCopy(lengthData, 0, packet, 0, lengthData.Length);
+            Buffer.BlockCopy(body, 0, packet, lengthData.Length, body.Length);
 
-            return null;
-            //return new HMessage(msgData);
+            return Resolver.CreatePacket(packet);
         }
         protected async Task<byte[]> ReceiveBufferAsync(int size, SocketFlags socketFlags)
         {
