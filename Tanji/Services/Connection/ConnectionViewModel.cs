@@ -4,6 +4,7 @@ using System.Net;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Threading.Tasks;
 
 using Microsoft.Win32;
 
@@ -238,7 +239,7 @@ namespace Tanji.Services.Connection
         private void InterceptConnection()
         {
             Status = INTERCEPTING_CONNECTION;
-            // TODO: Intercept connection.
+            Task connectTask = App.Master.Connection.InterceptAsync(HotelServer);
         }
 
         private void Browse(object obj)
