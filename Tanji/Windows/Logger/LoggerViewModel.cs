@@ -287,7 +287,7 @@ namespace Tanji.Windows.Logger
                 }
 
                 entry.Add(Tuple.Create(title, entryHighlight));
-                entry.Add(Tuple.Create($"({args.Packet.Header}, {args.Packet.Length}", entryHighlight));
+                entry.Add(Tuple.Create($"({args.Packet.Header}, {args.Packet.Body.Count}", entryHighlight));
                 if (message != null)
                 {
                     if (IsDisplayingMessageName)
