@@ -61,7 +61,6 @@ namespace Tanji.Network
 
         public HNode Local { get; private set; }
         public HNode Remote { get; private set; }
-        public bool IsDisposed { get; private set; }
         public bool IsConnected { get; private set; }
 
         public HConnection()
@@ -80,11 +79,6 @@ namespace Tanji.Network
         }
         public async Task InterceptAsync(HotelEndPoint endpoint)
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException("Object has already been disposed.");
-            }
-
             _remoteEndPoint = endpoint;
             int interceptCount = 0;
             while (!IsConnected)
@@ -109,13 +103,13 @@ namespace Tanji.Network
 
                     if (HResolver.Factory.AncientOut.GetHeader(buffer) == 206)
                     {
-                        tempLocal.DataResolver = HResolver.Factory.AncientOut;
-                        tempRemote.DataResolver = HResolver.Factory.AncientIn;
+                        tempLocal.Resolver = HResolver.Factory.AncientOut;
+                        tempRemote.Resolver = HResolver.Factory.AncientIn;
                     }
                     else if (HResolver.Factory.Modern.GetHeader(buffer) == 4000)
                     {
-                        tempLocal.DataResolver = HResolver.Factory.Modern;
-                        tempRemote.DataResolver = HResolver.Factory.Modern;
+                        tempLocal.Resolver = HResolver.Factory.Modern;
+                        tempRemote.Resolver = HResolver.Factory.Modern;
                     }
                     else
                     {
@@ -221,10 +215,6 @@ namespace Tanji.Network
 
         public void Disconnect()
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException("Object has already been disposed.");
-            }
             if (Monitor.TryEnter(_disconnectLock))
             {
                 try
@@ -255,14 +245,9 @@ namespace Tanji.Network
         }
         protected virtual void Dispose(bool disposing)
         {
-            lock (_disposeLock)
+            if (disposing)
             {
-                if (IsDisposed) return;
-                if (disposing)
-                {
-                    Disconnect();
-                }
-                IsDisposed = true;
+                Disconnect();
             }
         }
     }
