@@ -95,8 +95,7 @@ namespace Tangine.Network
         {
             if (!IsOriginal)
             {
-                // TODO
-                //Packet = new HPacket(_ogData);
+                Packet = Packet.Resolver.CreatePacket(_ogData);
             }
         }
     }
