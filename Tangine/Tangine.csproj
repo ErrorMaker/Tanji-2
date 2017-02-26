@@ -61,7 +61,8 @@
     <Compile Include="Habbo\HGame.cs" />
     <Compile Include="Modules\IInstaller.cs" />
     <Compile Include="Modules\IModule.cs" />
-    <Compile Include="Network\DataInterceptedEventArgs.cs" />
+    <Compile Include="Network\Event Args\DataInterceptedEventArgs.cs" />
+    <Compile Include="Network\HNode.cs" />
     <Compile Include="Network\HotelEndPoint.cs" />
     <Compile Include="Network\IHConnection.cs" />
     <Compile Include="Protocol\Ancient\HAncient.cs" />
