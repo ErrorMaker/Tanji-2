@@ -7,7 +7,7 @@ using Tangine.Network;
 using Tangine.Protocol;
 using Tangine.Protocol.Encryption;
 
-namespace Tanji.Network
+namespace Tangine.Network
 {
     public class HNode : IDisposable
     {
@@ -62,22 +62,25 @@ namespace Tanji.Network
             return ConnectAsync(new HotelEndPoint(addresses[0], port));
         }
 
-        public Task<HPacket> PeekPacketAsync()
-        {
-            return ReceivePacketAsync(SocketFlags.Peek);
-        }
-        public Task<byte[]> PeekBufferAsync(int size)
-        {
-            return ReceiveBufferAsync(size, SocketFlags.Peek);
-        }
-
         public Task<HPacket> ReceivePacketAsync()
         {
-            return ReceivePacketAsync(SocketFlags.None);
+            if (Resolver == null)
+            {
+                throw new NullReferenceException("Resolver cannot be null.");
+            }
+            return Resolver.ReceivePacketAsync(this);
         }
-        public Task<byte[]> ReceiveBufferAsync(int size)
+        public Task<int> SendPacketAsync(HPacket packet)
         {
-            return ReceiveBufferAsync(size, SocketFlags.None);
+            return SendAsync(packet.ToBytes());
+        }
+        public Task<int> SendPacketAsync(ushort header, params object[] values)
+        {
+            if (Resolver == null)
+            {
+                throw new NullReferenceException("Resolver cannot be null.");
+            }
+            return SendAsync(HPacket.Construct(Resolver, header, values));
         }
 
         public Task<int> SendAsync(byte[] buffer)
@@ -93,6 +96,10 @@ namespace Tanji.Network
             return SendAsync(buffer, offset, size, SocketFlags.None);
         }
 
+        public Task<byte[]> ReceiveAsync(int size)
+        {
+            return ReceiveBufferAsync(size, SocketFlags.None);
+        }
         public Task<int> ReceiveAsync(byte[] buffer)
         {
             return ReceiveAsync(buffer, buffer.Length);
@@ -106,6 +113,10 @@ namespace Tanji.Network
             return ReceiveAsync(buffer, offset, size, SocketFlags.None);
         }
 
+        public Task<byte[]> PeekAsync(int size)
+        {
+            return ReceiveBufferAsync(size, SocketFlags.Peek);
+        }
         public Task<int> PeekAsync(byte[] buffer)
         {
             return PeekAsync(buffer, buffer.Length);
@@ -119,52 +130,6 @@ namespace Tanji.Network
             return ReceiveAsync(buffer, offset, size, SocketFlags.Peek);
         }
 
-        protected async Task<HPacket> ReceivePacketAsync(SocketFlags socketFlags)
-        {
-            if (Resolver == null)
-            {
-                throw new NullReferenceException("Data resolver cannot be null.");
-            }
-
-            byte[] lengthData = await ReceiveBufferAsync(
-                Resolver.LengthBlockSize, socketFlags).ConfigureAwait(false);
-
-            if (lengthData.Length == 0 && Resolver.LengthBlockSize != 0)
-            {
-                await DisconnectAsync().ConfigureAwait(false);
-                return null;
-            }
-
-            int bodyLength = Resolver.GetBodyLength(lengthData);
-            var body = new byte[bodyLength];
-
-            int noneReadCount = 0;
-            int read = await ReceiveAsync(body).ConfigureAwait(false);
-            while (read != bodyLength)
-            {
-                int curRead = await ReceiveAsync(
-                    body, read, (bodyLength - read), socketFlags)
-                    .ConfigureAwait(false);
-
-                if (!IsConnected ||
-                    (curRead == 0 && ++noneReadCount >= 2))
-                {
-                    await DisconnectAsync().ConfigureAwait(false);
-                    return null;
-                }
-                else if (curRead > 0)
-                {
-                    noneReadCount = 0;
-                    read += curRead;
-                }
-            }
-
-            var packet = new byte[4 + bodyLength];
-            Buffer.BlockCopy(lengthData, 0, packet, 0, lengthData.Length);
-            Buffer.BlockCopy(body, 0, packet, lengthData.Length, body.Length);
-
-            return Resolver.CreatePacket(packet);
-        }
         protected async Task<byte[]> ReceiveBufferAsync(int size, SocketFlags socketFlags)
         {
             var buffer = new byte[size];
@@ -208,7 +173,7 @@ namespace Tanji.Network
             return read;
         }
 
-        public async Task DisconnectAsync()
+        public void Disconnect()
         {
             if (IsConnected)
             {
@@ -216,9 +181,7 @@ namespace Tanji.Network
                 {
                     Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
                     Client.Shutdown(SocketShutdown.Both);
-
-                    IAsyncResult result = Client.BeginDisconnect(false, null, null);
-                    await Task.Factory.FromAsync(result, Client.EndDisconnect).ConfigureAwait(false);
+                    Client.Disconnect(false);
                 }
                 catch (SocketException) { }
             }
