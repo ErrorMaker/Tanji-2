@@ -37,6 +37,11 @@ namespace Tangine.Network
 
         public static HHotel GetHotel(string host)
         {
+            if (string.IsNullOrWhiteSpace(host))
+            {
+                return HHotel.Unknown;
+            }
+
             var hotel = HHotel.Unknown;
             if (!Enum.TryParse(host, true, out hotel))
             {
