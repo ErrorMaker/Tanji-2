@@ -13,10 +13,6 @@
         {
             return null;
         }
-        protected override string AsString()
-        {
-            return null;
-        }
 
         public static byte[] Construct(bool isOutgoing, ushort header, params object[] values)
         {
