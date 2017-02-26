@@ -150,8 +150,11 @@ namespace Tanji.Services.Connection
                     App.Master.Game = new HGame(clientPath);
                     App.Master.Game.Disassemble();
 
-                    Status = GENERATING_MESSAGE_HASHES;
-                    App.Master.Game.GenerateMessageHashes();
+                    if (App.Master.Game.IsPostShuffle)
+                    {
+                        Status = GENERATING_MESSAGE_HASHES;
+                        App.Master.Game.GenerateMessageHashes();
+                    }
 
                     TerminateProxy();
                     InterceptConnection();
@@ -174,14 +177,20 @@ namespace Tanji.Services.Connection
             Status = DISASSEMBLING_CLIENT;
             App.Master.Game = new HGame(e.Payload);
             App.Master.Game.Disassemble();
+            if (App.Master.Game.IsPostShuffle)
+            {
+                Status = GENERATING_MESSAGE_HASHES;
+                App.Master.Game.GenerateMessageHashes();
 
-            Status = GENERATING_MESSAGE_HASHES;
-            App.Master.Game.GenerateMessageHashes();
-
-            Status = MODIFYING_CLIENT;
-            App.Master.Game.Sanitize(Sanitization.All);
-            App.Master.Game.DisableHostChecks();
-            App.Master.Game.InjectKeyShouter();
+                Status = MODIFYING_CLIENT;
+                App.Master.Game.DisableHostChecks();
+                App.Master.Game.InjectKeyShouter(4001);
+                App.Master.Game.Sanitize(Sanitization.Deobfuscate | Sanitization.RegisterRename);
+            }
+            else
+            {
+                App.Master.Game.InjectLoopbackEndpoint(HotelServer.Port);
+            }
 
             CompressionKind compression = CompressionKind.ZLIB;
 #if DEBUG
@@ -238,6 +247,9 @@ namespace Tanji.Services.Connection
         }
         private void InterceptConnection()
         {
+            App.Master.Connection.SocketSkip =
+                (App.Master.Game.IsPostShuffle ? 2 : 0);
+
             Status = INTERCEPTING_CONNECTION;
             Task connectTask = App.Master.Connection.InterceptAsync(HotelServer);
         }
@@ -339,10 +351,6 @@ namespace Tanji.Services.Connection
                 App.Master.Connection.Remote.IsEncrypting = true;
 
                 e.IsBlocked = true;
-                IsReceiving = false;
-            }
-            else if (e.Step > 10)
-            {
                 IsReceiving = false;
             }
         }
