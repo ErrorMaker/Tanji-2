@@ -12,7 +12,7 @@ namespace Tangine.Habbo
         private readonly Dictionary<string, string> _variables;
 
         private const string FLASH_VAR_PATTERN =
-            "(\"|')+?(?<variable>.*?)(\"|')+?(:| :| : |: )+?(\"|')+?(?<value>.*?)(\"|')+(,|\\s|$)+";
+            "(\"|')+?(?<variable>.*?)(\"|')+?(:| :| : |: |,|, )+?(\"|')+?(?<value>.*?)(\"|')+(\\)|,|\\s|$)+";
 
         private string _source;
         public string Source
