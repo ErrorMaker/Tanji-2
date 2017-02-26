@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Tangine.Network;
 
 namespace Tangine.Protocol
 {
     public class HModernResolver : HResolver
     {
-        public override int LengthBlockSize => 4;
-
         public HModernResolver()
             : base(false)
         { }
@@ -22,11 +22,6 @@ namespace Tangine.Protocol
         public override ushort GetHeader(byte[] data)
         {
             return ReadUInt16(data, 4);
-        }
-
-        public override int GetBodyLength(byte[] data)
-        {
-            return ReadInt32(data, 0);
         }
 
         public override int GetSize(int value)
@@ -48,15 +43,6 @@ namespace Tangine.Protocol
         public override int GetSize(double value)
         {
             return 6;
-        }
-
-        public override HPacket CreatePacket(byte[] data)
-        {
-            return new HModern(data);
-        }
-        public override HPacket CreatePacket(ushort header, params object[] values)
-        {
-            return new HModern(header, values);
         }
 
         public override int ReadInt32(IList<byte> data, int index)
@@ -95,6 +81,50 @@ namespace Tangine.Protocol
                 chunk[i] = data[i];
             }
             return BitConverter.ToDouble(chunk, 0);
+        }
+
+        public override async Task<HPacket> ReceivePacketAsync(HNode node)
+        {
+            byte[] lengthBlock = await node.ReceiveAsync(4).ConfigureAwait(false);
+            if (lengthBlock.Length != 4)
+            {
+                node.Disconnect();
+                return null;
+            }
+
+            int totalBytesRead = 0;
+            int nullBytesReadCount = 0;
+            var body = new byte[ReadInt32(lengthBlock, 0)];
+            do
+            {
+                int bytesLeft = (body.Length - totalBytesRead);
+                int bytesRead = await node.ReceiveAsync(body, totalBytesRead, bytesLeft).ConfigureAwait(false);
+
+                if (!node.IsConnected || (bytesRead == 0 && ++nullBytesReadCount >= 2))
+                {
+                    node.Disconnect();
+                    return null;
+                }
+
+                nullBytesReadCount = 0;
+                totalBytesRead += bytesRead;
+            }
+            while (totalBytesRead != body.Length);
+
+            var data = new byte[4 + body.Length];
+            Buffer.BlockCopy(lengthBlock, 0, data, 0, 4);
+            Buffer.BlockCopy(body, 0, data, 4, body.Length);
+
+            return CreatePacket(data);
+        }
+
+        public override HPacket CreatePacket(byte[] data)
+        {
+            return new HModern(data);
+        }
+        public override HPacket CreatePacket(ushort header, params object[] values)
+        {
+            return new HModern(header, values);
         }
     }
 }
