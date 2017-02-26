@@ -50,18 +50,11 @@ namespace Tanji.Network
             DataIncoming?.Invoke(this, e);
         }
 
-        private HotelEndPoint _remoteEndPoint;
-        public HotelEndPoint RemoteEndPoint
-        {
-            get
-            {
-                return (Remote?.EndPoint ?? _remoteEndPoint);
-            }
-        }
-
+        public int SocketSkip { get; set; } = 1;
         public HNode Local { get; private set; }
         public HNode Remote { get; private set; }
         public bool IsConnected { get; private set; }
+        public HotelEndPoint RemoteEndPoint => Remote?.EndPoint;
 
         public HConnection()
         {
@@ -79,70 +72,54 @@ namespace Tanji.Network
         }
         public async Task InterceptAsync(HotelEndPoint endpoint)
         {
-            _remoteEndPoint = endpoint;
             int interceptCount = 0;
             while (!IsConnected)
             {
-                HNode tempLocal = null;
-                HNode tempRemote = null;
                 try
                 {
-                    tempLocal = await HNode.AcceptAsync(endpoint.Port)
-                        .ConfigureAwait(false);
+                    Local = await HNode.AcceptAsync(endpoint.Port).ConfigureAwait(false);
+                    if (++interceptCount == SocketSkip) continue;
 
-                    if (++interceptCount == 2)
-                    {
-                        interceptCount = 0;
-                        continue;
-                    }
-                    byte[] buffer = await tempLocal.PeekBufferAsync(6)
-                        .ConfigureAwait(false);
-
-                    tempRemote = await HNode.ConnectNewAsync(endpoint)
-                        .ConfigureAwait(false);
-
+                    byte[] buffer = await Local.PeekAsync(6).ConfigureAwait(false);
+                    Remote = await HNode.ConnectNewAsync(endpoint).ConfigureAwait(false);
                     if (HResolver.Factory.AncientOut.GetHeader(buffer) == 206)
                     {
-                        tempLocal.Resolver = HResolver.Factory.AncientOut;
-                        tempRemote.Resolver = HResolver.Factory.AncientIn;
+                        Local.Resolver = HResolver.Factory.AncientOut;
+
+                        HResolver.Factory.AncientIn.DataBacklog.Clear();
+                        Remote.Resolver = HResolver.Factory.AncientIn;
                     }
                     else if (HResolver.Factory.Modern.GetHeader(buffer) == 4000)
                     {
-                        tempLocal.Resolver = HResolver.Factory.Modern;
-                        tempRemote.Resolver = HResolver.Factory.Modern;
+                        Local.Resolver = HResolver.Factory.Modern;
+                        Remote.Resolver = HResolver.Factory.Modern;
                     }
                     else
                     {
-                        buffer = await tempLocal.ReceiveBufferAsync(32).ConfigureAwait(false);
-                        await tempRemote.SendAsync(buffer).ConfigureAwait(false);
+                        buffer = await Local.ReceiveAsync(512).ConfigureAwait(false);
+                        await Remote.SendAsync(buffer).ConfigureAwait(false);
 
-                        buffer = await tempRemote.ReceiveBufferAsync(1024).ConfigureAwait(false);
-                        await tempLocal.SendAsync(buffer).ConfigureAwait(false);
+                        buffer = await Remote.ReceiveAsync(1024).ConfigureAwait(false);
+                        await Local.SendAsync(buffer).ConfigureAwait(false);
 
+                        await Local.SendAsync(new byte[0]).ConfigureAwait(false);
                         continue;
                     }
-
-                    Local = tempLocal;
-                    Remote = tempRemote;
 
                     IsConnected = true;
                     OnConnected(EventArgs.Empty);
 
+                    _inSteps = 0;
                     _outSteps = 0;
                     Task interceptOutgoingTask = InterceptOutgoingAsync();
-
-                    _inSteps = 0;
                     Task interceptIncomingTask = InterceptIncomingAsync();
                 }
                 finally
                 {
-                    if (Local != tempLocal)
+                    if (!IsConnected)
                     {
-                        tempLocal?.Dispose();
-                    }
-                    if (Remote != tempRemote)
-                    {
-                        tempRemote?.Dispose();
+                        Local?.Dispose();
+                        Remote?.Dispose();
                     }
                 }
             }
