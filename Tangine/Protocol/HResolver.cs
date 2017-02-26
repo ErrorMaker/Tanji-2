@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Tangine.Network;
 
 namespace Tangine.Protocol
 {
     public abstract class HResolver
     {
         protected bool IsOutgoing { get; }
-
-        public abstract int LengthBlockSize { get; }
 
         public static HResolverFactory Factory { get; }
 
@@ -23,8 +24,6 @@ namespace Tangine.Protocol
 
         public abstract byte[] GetBody(byte[] data);
         public abstract ushort GetHeader(byte[] data);
-        
-        public abstract int GetBodyLength(byte[] data);
 
         public abstract int GetSize(int value);
         public abstract int GetSize(bool value);
@@ -32,13 +31,15 @@ namespace Tangine.Protocol
         public abstract int GetSize(ushort value);
         public abstract int GetSize(double value);
 
-        public abstract HPacket CreatePacket(byte[] data);
-        public abstract HPacket CreatePacket(ushort header, params object[] values);
-
         public abstract int ReadInt32(IList<byte> data, int index);
         public abstract string ReadUTF8(IList<byte> data, int index);
         public abstract bool ReadBoolean(IList<byte> data, int index);
         public abstract ushort ReadUInt16(IList<byte> data, int index);
         public abstract double ReadDouble(IList<byte> data, int index);
+
+        public abstract Task<HPacket> ReceivePacketAsync(HNode node);
+
+        public abstract HPacket CreatePacket(byte[] data);
+        public abstract HPacket CreatePacket(ushort header, params object[] values);
     }
 }
