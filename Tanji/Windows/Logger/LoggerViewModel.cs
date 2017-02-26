@@ -232,7 +232,7 @@ namespace Tanji.Windows.Logger
 
         public void Halt()
         {
-            Visibility = Visibility.Collapsed;
+            //Visibility = Visibility.Collapsed;
             _intercepted.Clear();
         }
         public void Restore()
@@ -268,7 +268,7 @@ namespace Tanji.Windows.Logger
                 }
                 if (IsDisplayingTimestamp)
                 {
-                    entry.Add(Tuple.Create($"[{args.Timestamp.ToLongTimeString()}]\r\n", DetailHighlight));
+                    entry.Add(Tuple.Create($"[{args.Timestamp:h:mm:ss.ff tt}]\r\n", DetailHighlight));
                 }
                 MessageItem message = GetMessage(args);
                 if (IsDisplayingHash && message != null)
@@ -286,8 +286,9 @@ namespace Tanji.Windows.Logger
                     entryHighlight = IncomingHighlight;
                 }
 
-                entry.Add(Tuple.Create(title, entryHighlight));
-                entry.Add(Tuple.Create($"({args.Packet.Header}, {args.Packet.Body.Count}", entryHighlight));
+                entry.Add(Tuple.Create(title + "[", entryHighlight));
+                entry.Add(Tuple.Create(args.Packet.Header.ToString(), DetailHighlight));
+
                 if (message != null)
                 {
                     if (IsDisplayingMessageName)
@@ -301,7 +302,7 @@ namespace Tanji.Windows.Logger
                         entry.Add(Tuple.Create(message.Parser.QName.Name, DetailHighlight));
                     }
                 }
-                entry.Add(Tuple.Create(")", entryHighlight));
+                entry.Add(Tuple.Create("]", entryHighlight));
                 entry.Add(Tuple.Create($" {arrow} ", DetailHighlight));
                 entry.Add(Tuple.Create($"{args.Packet}\r\n", entryHighlight));
 
@@ -309,7 +310,7 @@ namespace Tanji.Windows.Logger
                 {
                     int position = 0;
                     HPacket packet = args.Packet;
-                    string structure = ("{l}{u:" + packet.Header + "}");
+                    string structure = ("{u:" + packet.Header + "}");
                     foreach (string valueType in message.Structure)
                     {
                         switch (valueType.ToLower())
@@ -327,7 +328,7 @@ namespace Tanji.Windows.Logger
                             break;
 
                             case "byte":
-                            structure += ("{b:" + packet.ReadBytes(1, ref position)[0] + "}");
+                            structure += ("{b:" + packet.ReadByte(ref position) + "}");
                             break;
 
                             case "boolean":
@@ -408,7 +409,6 @@ namespace Tanji.Windows.Logger
                 {
                     header = (ushort.MaxValue - header);
                 }
-
                 if (_ignoredMessages.ContainsKey(header)) return false;
             }
             return true;
