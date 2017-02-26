@@ -232,7 +232,7 @@ namespace Tanji.Windows.Logger
 
         public void Halt()
         {
-            //Visibility = Visibility.Collapsed;
+            Visibility = Visibility.Collapsed;
             _intercepted.Clear();
         }
         public void Restore()
