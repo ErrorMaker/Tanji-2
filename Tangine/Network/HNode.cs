@@ -3,9 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-using Tangine.Network;
-using Tangine.Protocol;
-using Tangine.Protocol.Encryption;
+using Tangine.Encryption;
+using Tangine.Network.Protocol;
 
 namespace Tangine.Network
 {
@@ -17,7 +16,7 @@ namespace Tangine.Network
         }
 
         public Socket Client { get; }
-        public HResolver Resolver { get; set; }
+        public HEncoding Resolver { get; set; }
         public HotelEndPoint EndPoint { get; private set; }
 
         public RC4 Encrypter { get; set; }
@@ -74,13 +73,13 @@ namespace Tangine.Network
         {
             return SendAsync(packet.ToBytes());
         }
-        public Task<int> SendPacketAsync(ushort header, params object[] values)
+        public Task<int> SendPacketAsync(ushort id, params object[] values)
         {
             if (Resolver == null)
             {
                 throw new NullReferenceException("Resolver cannot be null.");
             }
-            return SendAsync(HPacket.Construct(Resolver, header, values));
+            return SendAsync(Resolver.Construct(id, values));
         }
 
         public Task<int> SendAsync(byte[] buffer)

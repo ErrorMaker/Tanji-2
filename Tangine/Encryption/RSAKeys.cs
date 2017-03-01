@@ -1,4 +1,4 @@
-﻿namespace Tangine.Protocol.Encryption
+﻿namespace Tangine.Encryption
 {
     public struct RSAKeys
     {

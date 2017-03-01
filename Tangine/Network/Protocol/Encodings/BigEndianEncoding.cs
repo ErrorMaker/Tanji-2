@@ -3,25 +3,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Tangine.Network;
-
-namespace Tangine.Protocol
+namespace Tangine.Network.Protocol
 {
-    public class HModernResolver : HResolver
+    public class BigEndianEncoding : HEncoding
     {
-        public HModernResolver()
+        public override int IdPosition => 4;
+
+        public BigEndianEncoding()
             : base(false)
         { }
 
-        public override byte[] GetBody(byte[] data)
-        {
-            var body = new byte[data.Length - 6];
-            Buffer.BlockCopy(data, 6, body, 0, body.Length);
-            return body;
-        }
-        public override ushort GetHeader(byte[] data)
+        public override ushort GetId(IList<byte> data)
         {
             return ReadUInt16(data, 4);
+        }
+        public override byte[] GetBody(IList<byte> data)
+        {
+            var body = new byte[data.Count - 6];
+            for (int i = 0; i < body.Length; i++)
+            {
+                body[i] = data[i + 6];
+            }
+            return body;
         }
 
         public override int GetSize(int value)
@@ -43,6 +46,43 @@ namespace Tangine.Protocol
         public override int GetSize(double value)
         {
             return 6;
+        }
+
+        public override byte[] GetBytes(int value)
+        {
+            var data = new byte[4];
+            data[0] = (byte)(value >> 24);
+            data[1] = (byte)(value >> 16);
+            data[2] = (byte)(value >> 8);
+            data[3] = (byte)value;
+            return data;
+        }
+        public override byte[] GetBytes(bool value)
+        {
+            return new byte[] { (byte)(value ? 1 : 0) };
+        }
+        public override byte[] GetBytes(string value)
+        {
+            byte[] stringData = Encoding.UTF8.GetBytes(value);
+            byte[] lengthData = GetBytes((ushort)stringData.Length);
+
+            var data = new byte[lengthData.Length + stringData.Length];
+            Buffer.BlockCopy(lengthData, 0, data, 0, lengthData.Length);
+            Buffer.BlockCopy(stringData, 0, data, lengthData.Length, stringData.Length);
+            return data;
+        }
+        public override byte[] GetBytes(ushort value)
+        {
+            var data = new byte[2];
+            data[0] = (byte)(value >> 8);
+            data[1] = (byte)value;
+            return data;
+        }
+        public override byte[] GetBytes(double value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            Array.Reverse(data);
+            return data;
         }
 
         public override int ReadInt32(IList<byte> data, int index)
@@ -117,14 +157,23 @@ namespace Tangine.Protocol
 
             return CreatePacket(data);
         }
+        protected override byte[] ConstructTails(ushort id, IList<byte> body)
+        {
+            var data = new byte[6 + body.Count];
+            PlaceBytes(body.Count + 2, data, 0);
+            PlaceBytes(id, data, 4);
 
-        public override HPacket CreatePacket(byte[] data)
+            body.CopyTo(data, 6);
+            return data;
+        }
+
+        public override HPacket CreatePacket(IList<byte> data)
         {
             return new HModern(data);
         }
-        public override HPacket CreatePacket(ushort header, params object[] values)
+        public override HPacket CreatePacket(ushort id, params object[] values)
         {
-            return new HModern(header, values);
+            return new HModern(id, values);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Numerics;
 using System.Globalization;
 using System.Security.Cryptography;
 
-namespace Tangine.Protocol.Encryption
+namespace Tangine.Encryption
 {
     public class HKeyExchange : IDisposable
     {
@@ -240,7 +240,7 @@ namespace Tangine.Protocol.Encryption
             valueData = PKCSUnpad(valueData);
             return BigInteger.Parse(Encoding.UTF8.GetString(valueData));
         }
-        
+
         private byte[] ReverseNull(byte[] data)
         {
             bool isNegative = false;

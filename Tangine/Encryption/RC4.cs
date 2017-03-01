@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tangine.Protocol.Encryption
+namespace Tangine.Encryption
 {
     public class RC4
     {

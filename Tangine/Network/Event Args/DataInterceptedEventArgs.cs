@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Tangine.Protocol;
+
+using Tangine.Network.Protocol;
 
 namespace Tangine.Network
 {

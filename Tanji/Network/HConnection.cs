@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Tangine.Network;
-using Tangine.Protocol;
+using Tangine.Network.Protocol;
 
 namespace Tanji.Network
 {
@@ -82,17 +82,17 @@ namespace Tanji.Network
 
                     byte[] buffer = await Local.PeekAsync(6).ConfigureAwait(false);
                     Remote = await HNode.ConnectNewAsync(endpoint).ConfigureAwait(false);
-                    if (HResolver.Factory.AncientOut.GetHeader(buffer) == 206)
+                    if (HEncoding.WedgieOut.GetId(buffer) == 206)
                     {
-                        Local.Resolver = HResolver.Factory.AncientOut;
+                        HEncoding.WedgieIn.DataBacklog.Clear();
 
-                        HResolver.Factory.AncientIn.DataBacklog.Clear();
-                        Remote.Resolver = HResolver.Factory.AncientIn;
+                        Local.Resolver = HEncoding.WedgieOut;
+                        Remote.Resolver = HEncoding.WedgieIn;
                     }
-                    else if (HResolver.Factory.Modern.GetHeader(buffer) == 4000)
+                    else if (HEncoding.BigEndian.GetId(buffer) == 4000)
                     {
-                        Local.Resolver = HResolver.Factory.Modern;
-                        Remote.Resolver = HResolver.Factory.Modern;
+                        Local.Resolver = HEncoding.BigEndian;
+                        Remote.Resolver = HEncoding.BigEndian;
                     }
                     else
                     {

@@ -65,17 +65,17 @@
     <Compile Include="Network\HNode.cs" />
     <Compile Include="Network\HotelEndPoint.cs" />
     <Compile Include="Network\IHConnection.cs" />
-    <Compile Include="Protocol\Ancient\HAncient.cs" />
-    <Compile Include="Protocol\Ancient\HAncientResolver.cs" />
-    <Compile Include="Protocol\HResolverFactory.cs" />
-    <Compile Include="Protocol\Encryption\Enums\PKCSPadding.cs" />
-    <Compile Include="Protocol\Encryption\HKeyExchange.cs" />
-    <Compile Include="Protocol\Encryption\RC4.cs" />
-    <Compile Include="Protocol\Encryption\RSAKeys.cs" />
-    <Compile Include="Protocol\HPacket.cs" />
-    <Compile Include="Protocol\Modern\HModern.cs" />
-    <Compile Include="Protocol\Modern\HModernResolver.cs" />
-    <Compile Include="Protocol\HResolver.cs" />
+    <Compile Include="Network\Protocol\HAncient.cs" />
+    <Compile Include="Network\Protocol\Encodings\WedgieEncoding.cs" />
+    <Compile Include="Encryption\PKCSPadding.cs" />
+    <Compile Include="Encryption\HKeyExchange.cs" />
+    <Compile Include="Encryption\RC4.cs" />
+    <Compile Include="Encryption\RSAKeys.cs" />
+    <Compile Include="Network\Protocol\HPacket.cs" />
+    <Compile Include="Network\Protocol\IHabboData.cs" />
+    <Compile Include="Network\Protocol\HModern.cs" />
+    <Compile Include="Network\Protocol\Encodings\BigEndianEncoding.cs" />
+    <Compile Include="Network\Protocol\Encodings\HEncoding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

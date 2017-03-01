@@ -11,7 +11,7 @@ using Tanji.Controls;
 
 using Tangine.Habbo;
 using Tangine.Network;
-using Tangine.Protocol;
+using Tangine.Network.Protocol;
 
 namespace Tanji.Windows.Logger
 {
@@ -94,7 +94,14 @@ namespace Tanji.Windows.Logger
         private bool _isDisplayingHash = true;
         public bool IsDisplayingHash
         {
-            get { return _isDisplayingHash; }
+            get
+            {
+                if (App.Master?.Game?.IsPostShuffle ?? false)
+                {
+                    return _isDisplayingHash;
+                }
+                return false;
+            }
             set
             {
                 _isDisplayingHash = value;
@@ -287,7 +294,7 @@ namespace Tanji.Windows.Logger
                 }
 
                 entry.Add(Tuple.Create(title + "[", entryHighlight));
-                entry.Add(Tuple.Create(args.Packet.Header.ToString(), DetailHighlight));
+                entry.Add(Tuple.Create(args.Packet.Id.ToString(), DetailHighlight));
 
                 if (message != null)
                 {
@@ -296,7 +303,7 @@ namespace Tanji.Windows.Logger
                         entry.Add(Tuple.Create(", ", entryHighlight));
                         entry.Add(Tuple.Create(message.Class.QName.Name, DetailHighlight));
                     }
-                    if (!args.IsOutgoing && IsDisplayingParserName)
+                    if (IsDisplayingParserName && message.Parser != null)
                     {
                         entry.Add(Tuple.Create(", ", entryHighlight));
                         entry.Add(Tuple.Create(message.Parser.QName.Name, DetailHighlight));
@@ -310,7 +317,7 @@ namespace Tanji.Windows.Logger
                 {
                     int position = 0;
                     HPacket packet = args.Packet;
-                    string structure = ("{u:" + packet.Header + "}");
+                    string structure = ("{u:" + packet.Id + "}");
                     foreach (string valueType in message.Structure)
                     {
                         switch (valueType.ToLower())
@@ -389,7 +396,7 @@ namespace Tanji.Windows.Logger
                 App.Master.Game.OutMessages : App.Master.Game.InMessages);
 
             MessageItem message = null;
-            messages.TryGetValue(args.Packet.Header, out message);
+            messages.TryGetValue(args.Packet.Id, out message);
 
             return message;
         }
@@ -404,12 +411,12 @@ namespace Tanji.Windows.Logger
 
             if (_ignoredMessages.Count > 0)
             {
-                int header = args.Packet.Header;
+                int id = args.Packet.Id;
                 if (!args.IsOutgoing)
                 {
-                    header = (ushort.MaxValue - header);
+                    id = (ushort.MaxValue - id);
                 }
-                if (_ignoredMessages.ContainsKey(header)) return false;
+                if (_ignoredMessages.ContainsKey(id)) return false;
             }
             return true;
         }

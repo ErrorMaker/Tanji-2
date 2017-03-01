@@ -12,7 +12,7 @@ using Tanji.Helpers;
 
 using Tangine.Habbo;
 using Tangine.Network;
-using Tangine.Protocol.Encryption;
+using Tangine.Encryption;
 
 using Eavesdrop;
 
@@ -150,11 +150,8 @@ namespace Tanji.Services.Connection
                     App.Master.Game = new HGame(clientPath);
                     App.Master.Game.Disassemble();
 
-                    if (App.Master.Game.IsPostShuffle)
-                    {
-                        Status = GENERATING_MESSAGE_HASHES;
-                        App.Master.Game.GenerateMessageHashes();
-                    }
+                    Status = GENERATING_MESSAGE_HASHES;
+                    App.Master.Game.GenerateMessageHashes();
 
                     TerminateProxy();
                     InterceptConnection();
@@ -177,12 +174,13 @@ namespace Tanji.Services.Connection
             Status = DISASSEMBLING_CLIENT;
             App.Master.Game = new HGame(e.Payload);
             App.Master.Game.Disassemble();
+
+            Status = GENERATING_MESSAGE_HASHES;
+            App.Master.Game.GenerateMessageHashes();
+
+            Status = MODIFYING_CLIENT;
             if (App.Master.Game.IsPostShuffle)
             {
-                Status = GENERATING_MESSAGE_HASHES;
-                App.Master.Game.GenerateMessageHashes();
-
-                Status = MODIFYING_CLIENT;
                 App.Master.Game.DisableHostChecks();
                 App.Master.Game.InjectKeyShouter(4001);
                 App.Master.Game.Sanitize(Sanitization.Deobfuscate | Sanitization.RegisterRename);
@@ -335,7 +333,7 @@ namespace Tanji.Services.Connection
         public bool IsReceiving { get; private set; }
         public void HandleOutgoing(DataInterceptedEventArgs e)
         {
-            if (e.Packet.Header == 4001)
+            if (e.Packet.Id == 4001)
             {
                 string sharedKeyHex = e.Packet.ReadUTF8();
                 if (sharedKeyHex.Length % 2 != 0)
