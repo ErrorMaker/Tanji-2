@@ -213,13 +213,11 @@ namespace Tanji.Services.Connection
 
             if (IsAutomaticServerExtraction)
             {
-                ushort port = 0;
-                HotelEndPoint endpoint = null;
                 string[] ports = App.Master.GameData.InfoPort.Split(',');
 
                 if (ports.Length == 0 ||
-                    !ushort.TryParse(ports[0], out port) ||
-                    !HotelEndPoint.TryParse(App.Master.GameData.InfoHost, port, out endpoint))
+                    !ushort.TryParse(ports[0], out ushort port) ||
+                    !HotelEndPoint.TryParse(App.Master.GameData.InfoHost, port, out HotelEndPoint endpoint))
                 {
                     Cancel(null);
                     return;
